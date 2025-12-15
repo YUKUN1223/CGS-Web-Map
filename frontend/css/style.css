@@ -1,0 +1,569 @@
+/* ============================================================
+   Water of Leith WebMap - Main Styles v4
+   ============================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #1e3a5f;
+    --primary-light: #2d5a87;
+    --accent: #27ae60;
+    --accent-light: #2ecc71;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --bg: #f8f9fa;
+    --bg-alt: #ecf0f1;
+    --white: #ffffff;
+    --shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+body {
+    font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* ============================================================
+   导航栏
+   ============================================================ */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.logo-icon {
+    font-size: 24px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: var(--primary);
+    color: white;
+}
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 30px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></svg>');
+    background-size: 100px 100px;
+    opacity: 0.5;
+}
+
+.hero-content {
+    position: relative;
+    text-align: center;
+    max-width: 900px;
+    color: white;
+}
+
+.hero-title {
+    margin-bottom: 25px;
+}
+
+.title-accent {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+.title-main {
+    display: block;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 700px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+}
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.hero-stat {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+    color: var(--accent-light);
+}
+
+.stat-desc {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-cta {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    padding: 16px 40px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(39, 174, 96, 0.4);
+}
+
+.hero-cta:hover {
+    background: var(--accent-light);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(39, 174, 96, 0.5);
+}
+
+/* ============================================================
+   通用Section
+   ============================================================ */
+.section {
+    padding: 80px 30px;
+}
+
+.section-alt {
+    background: var(--bg-alt);
+}
+
+.section-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.title-icon {
+    font-size: 1.5rem;
+}
+
+/* ============================================================
+   Overview Cards
+   ============================================================ */
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.overview-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.overview-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.overview-card h3 {
+    color: var(--primary);
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+}
+
+.overview-card p {
+    color: var(--text-light);
+    line-height: 1.7;
+}
+
+/* ============================================================
+   Methodology
+   ============================================================ */
+.methodology-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.method-step {
+    display: flex;
+    gap: 25px;
+    background: white;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--primary);
+}
+
+.step-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 0.3;
+    font-family: 'Playfair Display', serif;
+    min-width: 60px;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-content h3 {
+    color: var(--primary);
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.step-content p {
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+.step-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    background: var(--bg-alt);
+    color: var(--primary);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.formula-mini {
+    background: var(--bg-alt);
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    color: var(--primary);
+    display: inline-block;
+}
+
+.step-highlight {
+    background: rgba(39, 174, 96, 0.1);
+    border-left: 3px solid var(--accent);
+    padding: 12px 15px;
+    border-radius: 0 6px 6px 0;
+    margin-top: 10px;
+}
+
+.step-highlight strong {
+    color: var(--accent);
+}
+
+.step-highlight-box {
+    border-left-color: var(--accent);
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.05) 0%, rgba(46, 204, 113, 0.08) 100%);
+}
+
+.formula-box {
+    background: white;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin: 15px 0;
+}
+
+.formula-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--bg-alt);
+}
+
+.formula-row:last-child {
+    border-bottom: none;
+}
+
+.formula-label {
+    min-width: 140px;
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+.formula-eq {
+    font-family: 'Courier New', monospace;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.formula-source {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    font-style: italic;
+    margin-top: 10px;
+}
+
+/* ============================================================
+   Findings
+   ============================================================ */
+.findings-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.finding-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.finding-card:hover {
+    transform: translateY(-5px);
+}
+
+.finding-card.primary {
+    grid-column: span 3;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    color: white;
+}
+
+.finding-value {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.finding-card.primary .finding-value {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.finding-label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.finding-detail {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.finding-card.primary .finding-detail {
+    color: rgba(255,255,255,0.8);
+}
+
+/* ============================================================
+   CTA Section
+   ============================================================ */
+.section-cta {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    text-align: center;
+    color: white;
+}
+
+.section-cta h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.section-cta p {
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto 30px;
+}
+
+.cta-button {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    padding: 16px 40px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+    background: var(--accent-light);
+    transform: translateY(-3px);
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.footer {
+    background: var(--primary);
+    color: white;
+    padding: 50px 30px 20px;
+}
+
+.footer-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.footer-info h4 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.footer-info p {
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 25px;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.footer-links a:hover {
+    opacity: 1;
+}
+
+.footer-bottom {
+    max-width: 1100px;
+    margin: 30px auto 0;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* ============================================================
+   响应式
+   ============================================================ */
+@media (max-width: 768px) {
+    .hero-stats {
+        gap: 30px;
+    }
+    
+    .findings-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .finding-card.primary {
+        grid-column: span 1;
+    }
+    
+    .method-step {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .step-number {
+        font-size: 2rem;
+    }
+    
+    .nav-links {
+        gap: 15px;
+    }
+}

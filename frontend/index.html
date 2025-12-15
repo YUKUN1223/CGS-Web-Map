@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water of Leith - Upstream Greenspace Flood Protection Value Assessment</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-icon">💧</span>
+                <span class="logo-text">Water of Leith</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="map.html" class="nav-link">Interactive Map</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-accent">Water of Leith</span>
+                <span class="title-main">Upstream Greenspace Flood Protection Value Assessment</span>
+            </h1>
+            <p class="hero-subtitle">
+                Evaluating the economic benefits of using urban greenspaces as natural flood reservoirs 
+                in the Water of Leith catchment, Edinburgh
+            </p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="stat-number" data-target="71000000" data-prefix="£" data-suffix="">0</span>
+                    <span class="stat-desc">Protection Value</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number" data-target="73" data-prefix="" data-suffix="%">0</span>
+                    <span class="stat-desc">Damage Reduction</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-number" data-target="267321" data-format="full" data-prefix="" data-suffix=" m³">0</span>
+                    <span class="stat-desc">Storage Capacity</span>
+                </div>
+            </div>
+            <a href="map.html" class="hero-cta">Explore Interactive Map →</a>
+        </div>
+    </header>
+
+    <!-- 项目概述 -->
+    <section class="section" id="overview">
+        <div class="section-container">
+            <h2 class="section-title">
+                <span class="title-icon">📋</span>
+                Project Overview
+            </h2>
+            
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <div class="card-icon">🎯</div>
+                    <h3>Research Objective</h3>
+                    <p>To assess the financial benefits of flood mitigation for residential, commercial and industrial properties in the Water of Leith catchment by using upstream greenspaces as natural flood reservoirs during a 1-in-200-year flood event.</p>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="card-icon">🌊</div>
+                    <h3>Study Context</h3>
+                    <p>The Water of Leith catchment encompasses 73 km² of potentially vulnerable areas. In 2000, flooding inundated over 1000 properties. This research evaluates green reservoir solutions that intercept and store flood volumes to protect downstream settlements.</p>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="card-icon">💡</div>
+                    <h3>Key Innovation</h3>
+                    <p>By integrating hydrological assessments, financial damage calculations, and social vulnerability analysis (SIMD), this project provides a comprehensive framework for evaluating nature-based flood solutions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 方法论 -->
+    <section class="section section-alt" id="methodology">
+        <div class="section-container">
+            <h2 class="section-title">
+                <span class="title-icon">🔬</span>
+                Methodology
+            </h2>
+            
+            <div class="methodology-flow">
+                <div class="method-step">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <h3>Data Collection</h3>
+                        <p>Multi-source data integration including NRFA time series data for flood estimation, OS building footprints, SEPA 1/200-year flood extent, 2m DTM for greenspace volume calculation, and SIMD 2020 for social vulnerability assessment.</p>
+                        <div class="step-tags">
+                            <span class="tag">NRFA</span>
+                            <span class="tag">OS Data</span>
+                            <span class="tag">SEPA</span>
+                            <span class="tag">DTM</span>
+                            <span class="tag">SIMD</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="method-step">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <h3>Flood Volume Estimation</h3>
+                        <p>Using triangular hydrograph method with Peak Over Threshold analysis to calculate bankfull discharge (43 m³/s) and estimate flood volumes for 1-in-200-year event. Maximum flood volume: 349,650 m³.</p>
+                        <div class="formula-mini">V = ½ × Q<sub>peak</sub> × T<sub>duration</sub></div>
+                    </div>
+                </div>
+                
+                <div class="method-step">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <h3>Greenspace Storage Capacity</h3>
+                        <p>DTM tiles combined into mosaic dataset. TIN-based Polygon Volume tool calculates storage capacity using surface area and simulated reservoir heights (mean elevation, max 5m). Total capacity: 267,321 m³.</p>
+                        <div class="step-highlight">
+                            <strong>Key Finding:</strong> Selected greenspaces can retain 73-130% of predicted flood volumes
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="method-step">
+                    <div class="step-number">04</div>
+                    <div class="step-content">
+                        <h3>Social Vulnerability Assessment</h3>
+                        <p>SIMD 2020 data analysed using four factors: income, employment, housing, and education. Normalised scoring and weighted averaging create a flood risk index highlighting environmental inequality.</p>
+                        <div class="formula-mini">Risk = Hazard × Vulnerability</div>
+                    </div>
+                </div>
+                
+                <div class="method-step step-highlight-box">
+                    <div class="step-number">05</div>
+                    <div class="step-content">
+                        <h3>Financial Damage Assessment</h3>
+                        <p>JRC Global Flood Depth-Damage Functions applied to calculate baseline damages. Values adjusted using CPI from 2010 to 2024 prices. Avoided damage calculated using flood volume reduction coefficient.</p>
+                        <div class="formula-box">
+                            <div class="formula-row">
+                                <span class="formula-label">CPI Adjustment:</span>
+                                <span class="formula-eq">Damage<sub>2024</sub> = Damage<sub>2010</sub> × 1.474</span>
+                            </div>
+                            <div class="formula-row">
+                                <span class="formula-label">Protected Damage:</span>
+                                <span class="formula-eq">Damage<sub>protected</sub> = Damage<sub>2024</sub> × 0.27</span>
+                            </div>
+                            <div class="formula-row">
+                                <span class="formula-label">Protection Value:</span>
+                                <span class="formula-eq">Value = Damage<sub>2024</sub> × 0.73</span>
+                            </div>
+                        </div>
+                        <div class="formula-source">Source: JRC Technical Report (Huizinga et al., 2017)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关键发现 -->
+    <section class="section" id="findings">
+        <div class="section-container">
+            <h2 class="section-title">
+                <span class="title-icon">📊</span>
+                Key Findings
+            </h2>
+            
+            <div class="findings-grid">
+                <div class="finding-card primary">
+                    <div class="finding-value" data-target="71001757" data-prefix="£">£0</div>
+                    <div class="finding-label">Total Protection Value</div>
+                    <div class="finding-detail">Economic benefit from greenspace flood mitigation</div>
+                </div>
+                
+                <div class="finding-card">
+                    <div class="finding-value" data-target="41800000" data-prefix="£">£0</div>
+                    <div class="finding-label">Residential Savings</div>
+                    <div class="finding-detail">Avoided damage to residential properties</div>
+                </div>
+                
+                <div class="finding-card">
+                    <div class="finding-value" data-target="27100000" data-prefix="£">£0</div>
+                    <div class="finding-label">Commercial Savings</div>
+                    <div class="finding-detail">Avoided damage to commercial properties</div>
+                </div>
+                
+                <div class="finding-card">
+                    <div class="finding-value" data-target="2100000" data-prefix="£">£0</div>
+                    <div class="finding-label">Industrial Savings</div>
+                    <div class="finding-detail">Avoided damage to industrial properties</div>
+                </div>
+                
+                <div class="finding-card">
+                    <div class="finding-value" data-target="267321" data-suffix=" m³">0</div>
+                    <div class="finding-label">Key Greenspace Storage</div>
+                    <div class="finding-detail">Selected reservoirs capacity</div>
+                </div>
+                
+                <div class="finding-card">
+                    <div class="finding-value" data-target="1105" data-prefix="">0</div>
+                    <div class="finding-label">Buildings Protected</div>
+                    <div class="finding-detail">Properties within flood zone</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section section-cta">
+        <div class="section-container">
+            <h2>Explore the Data</h2>
+            <p>Interact with our comprehensive spatial database to visualise flood protection values, greenspace locations, and social vulnerability patterns.</p>
+            <a href="map.html" class="cta-button">🗺️ Launch Interactive Map</a>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-info">
+                <h4>Water of Leith Flood Protection Assessment</h4>
+                <p>University of Edinburgh - CGS Group 3 Project</p>
+                <p>Data sources: SEPA, OS, SIMD 2020, NRFA, JRC</p>
+            </div>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="map.html">Interactive Map</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 CGS Group 3. Academic Research Project.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

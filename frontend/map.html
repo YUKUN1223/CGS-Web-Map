@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Map - Water of Leith Flood Protection</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="css/map.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="map-nav">
+        <a href="index.html" class="nav-back">← Back to Home</a>
+        <span class="nav-title">💧 Water of Leith Interactive Map</span>
+        <div class="nav-actions">
+            <button class="nav-btn" id="exportBtn" title="Export Data">📥 Export</button>
+            <button class="nav-btn" id="helpBtn" title="Help">❓ Help</button>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="map-container">
+        <!-- 左侧边栏 - 图层控制 -->
+        <aside class="sidebar sidebar-left" id="leftSidebar">
+            <button class="sidebar-toggle" id="leftToggle">◀</button>
+            <div class="sidebar-content">
+                <h3 class="sidebar-title">🗂️ Layers</h3>
+                <p class="layer-hint">↕ Drag to reorder layers</p>
+                
+                <div class="layer-list" id="layerList">
+                    <!-- Study Area -->
+                    <div class="layer-item" draggable="true" data-layer="studyArea">
+                        <div class="layer-header">
+                            <input type="checkbox" id="layerStudyArea" checked>
+                            <label for="layerStudyArea">
+                                <span class="layer-icon">🗺️</span> Study Area
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- SIMD Zones -->
+                    <div class="layer-item" draggable="true" data-layer="simd">
+                        <div class="layer-header">
+                            <input type="checkbox" id="layerSimd" checked>
+                            <label for="layerSimd">
+                                <span class="layer-icon">📊</span> SIMD Zones
+                            </label>
+                            <button class="layer-expand">▼</button>
+                        </div>
+                        <div class="layer-options">
+                            <select id="simdFilter">
+                                <option value="">All Zones</option>
+                                <option value="high">High Vulnerability (1-3)</option>
+                                <option value="medium">Medium Vulnerability (4-7)</option>
+                                <option value="low">Low Vulnerability (8-10)</option>
+                            </select>
+                            <div class="range-filter">
+                                <label>Custom Range:</label>
+                                <div class="range-inputs">
+                                    <input type="number" id="simdMin" placeholder="Min" min="1" max="10">
+                                    <span>-</span>
+                                    <input type="number" id="simdMax" placeholder="Max" min="1" max="10">
+                                    <button class="apply-btn" id="applySimdRange">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Greenspaces -->
+                    <div class="layer-item" draggable="true" data-layer="greenspaces">
+                        <div class="layer-header">
+                            <input type="checkbox" id="layerGreenspaces" checked>
+                            <label for="layerGreenspaces">
+                                <span class="layer-icon">🌳</span> Greenspaces
+                            </label>
+                            <button class="layer-expand">▼</button>
+                        </div>
+                        <div class="layer-options">
+                            <select id="greenspaceFilter">
+                                <option value="">All Greenspaces</option>
+                                <option value="key">Key Greenspaces Only</option>
+                                <option value="selected">Selected Greenspaces</option>
+                                <option value="other">Other Greenspaces</option>
+                            </select>
+                            <div class="range-filter">
+                                <label>Storage (m³):</label>
+                                <div class="range-inputs">
+                                    <input type="number" id="gsMin" placeholder="Min">
+                                    <span>-</span>
+                                    <input type="number" id="gsMax" placeholder="Max">
+                                    <button class="apply-btn" id="applyGsRange">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Flood Zones -->
+                    <div class="layer-item" draggable="true" data-layer="floodZones">
+                        <div class="layer-header">
+                            <input type="checkbox" id="layerFloodZones">
+                            <label for="layerFloodZones">
+                                <span class="layer-icon">🌊</span> Flood Zones
+                            </label>
+                            <button class="layer-expand">▼</button>
+                        </div>
+                        <div class="layer-options">
+                            <select id="floodDepthFilter">
+                                <option value="">All Depths</option>
+                                <option value="shallow">Shallow (< 0.3m)</option>
+                                <option value="medium">Medium (0.3-1.0m)</option>
+                                <option value="deep">Deep (> 1.0m)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Flood Damage -->
+                    <div class="layer-item" draggable="true" data-layer="floodDamage">
+                        <div class="layer-header">
+                            <input type="checkbox" id="layerFloodDamage" checked>
+                            <label for="layerFloodDamage">
+                                <span class="layer-icon">🏠</span> Building Damage
+                            </label>
+                            <button class="layer-expand">▼</button>
+                        </div>
+                        <div class="layer-options">
+                            <select id="buildingTypeFilter">
+                                <option value="">All Types</option>
+                                <option value="residential">Residential</option>
+                                <option value="commercial">Commercial</option>
+                                <option value="industrial">Industrial</option>
+                            </select>
+                            <div class="range-filter">
+                                <label>Protection Value (£):</label>
+                                <div class="range-inputs">
+                                    <input type="number" id="dmgMin" placeholder="Min">
+                                    <span>-</span>
+                                    <input type="number" id="dmgMax" placeholder="Max">
+                                    <button class="apply-btn" id="applyDmgRange">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 图例 -->
+                <div class="legend-section">
+                    <h4>Legend</h4>
+                    <div class="legend-item">
+                        <span class="legend-color dashed"></span>
+                        <span>Study Area</span>
+                    </div>
+                    <div class="legend-group">
+                        <strong>SIMD Vulnerability:</strong>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #e74c3c;"></span>
+                            <span>High (Decile 1-3)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #f39c12;"></span>
+                            <span>Medium (Decile 4-7)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #27ae60;"></span>
+                            <span>Low (Decile 8-10)</span>
+                        </div>
+                    </div>
+                    <div class="legend-group">
+                        <strong>Building Protection Value:</strong>
+                        <div class="legend-gradient">
+                            <div class="gradient-bar"></div>
+                            <div class="gradient-labels">
+                                <span>£0</span>
+                                <span>£500K+</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 地图 -->
+        <div id="map"></div>
+        <!-- 右侧边栏 - 统计信息 -->
+        <aside class="sidebar sidebar-right" id="rightSidebar">
+            <button class="sidebar-toggle" id="rightToggle">▶</button>
+            <div class="sidebar-content">
+                <h3 class="sidebar-title">📈 Statistics</h3>
+                
+                <!-- 总览 -->
+                <div class="stats-card">
+                    <h4>Overview</h4>
+                    <div class="stat-row">
+                        <span class="stat-label">Total Protection Value</span>
+                        <span class="stat-value" id="statTotalProtection">Loading...</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Protection Rate</span>
+                        <span class="stat-value highlight" id="statProtectionRate">73%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Buildings Affected</span>
+                        <span class="stat-value" id="statBuildingCount">--</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Greenspace Storage</span>
+                        <span class="stat-value" id="statStorage">--</span>
+                    </div>
+                </div>
+                
+                <!-- 损失分类图表 -->
+                <div class="stats-card">
+                    <h4>Damage by Category</h4>
+                    <p class="chart-hint">Click bars to filter map</p>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 绿地排名 -->
+                <div class="stats-card">
+                    <h4>Final Selected Greenspaces</h4>
+                    <p class="chart-hint">Click to locate on map</p>
+                    <div class="chart-container">
+                        <canvas id="greenspaceChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 选中要素信息 -->
+                <div class="stats-card" id="featureInfo" style="display: none;">
+                    <h4>🔍 Selected Feature</h4>
+                    <div id="featureDetails"></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 3D模型弹窗 -->
+    <div class="modal-3d" id="modal3D">
+        <div class="modal-3d-content">
+            <div class="modal-3d-header">
+                <h3 id="modal3DTitle">3D Model</h3>
+                <button class="modal-3d-close" id="close3D">×</button>
+            </div>
+            <div class="modal-3d-body">
+                <iframe id="model3DIframe" src="" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出弹窗 -->
+    <div class="modal-export" id="modalExport">
+        <div class="modal-export-content">
+            <div class="modal-export-header">
+                <h3>📥 Export Data</h3>
+                <button class="modal-close" id="closeExport">×</button>
+            </div>
+            <div class="modal-export-body">
+                <p>Select data to export:</p>
+                <div class="export-options">
+                    <button class="export-btn" data-type="flood_damage" data-format="csv">
+                        🏠 Flood Damage (CSV)
+                    </button>
+                    <button class="export-btn" data-type="greenspaces" data-format="csv">
+                        🌳 Greenspaces (CSV)
+                    </button>
+                    <button class="export-btn" data-type="simd_zones" data-format="csv">
+                        📊 SIMD Zones (CSV)
+                    </button>
+                    <button class="export-btn" data-type="summary" data-format="csv">
+                        📋 Summary Statistics (CSV)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 帮助弹窗 -->
+    <div class="modal-help" id="modalHelp">
+        <div class="modal-help-content">
+            <div class="modal-help-header">
+                <h3>❓ Help Guide</h3>
+                <button class="modal-close" id="closeHelp">×</button>
+            </div>
+            <div class="modal-help-body">
+                <h4>Layer Controls</h4>
+                <ul>
+                    <li><strong>Toggle layers:</strong> Use checkboxes to show/hide layers</li>
+                    <li><strong>Filter data:</strong> Use dropdowns and range inputs</li>
+                    <li><strong>Reorder layers:</strong> Drag layer items to change display order</li>
+                </ul>
+                
+                <h4>Map Interaction</h4>
+                <ul>
+                    <li><strong>Click features:</strong> View detailed information</li>
+                    <li><strong>3D Models:</strong> Click "View 3D" button for key greenspaces</li>
+                </ul>
+                
+                <h4>Charts</h4>
+                <ul>
+                    <li><strong>Category chart:</strong> Click bars to filter buildings by type</li>
+                    <li><strong>Greenspace chart:</strong> Click bars to locate and highlight greenspace</li>
+                </ul>
+                
+                <h4>Data Export</h4>
+                <ul>
+                    <li>Click "Export" button to download data in CSV format</li>
+                </ul>
+                
+                <h4>SIMD Classification</h4>
+                <p>SIMD Decile 1 = Most Deprived (High Vulnerability)<br>
+                SIMD Decile 10 = Least Deprived (Low Vulnerability)</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/map.js"></script>
+</body>
+</html>
