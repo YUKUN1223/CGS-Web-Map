@@ -1,5 +1,5 @@
 /* ============================================================
-   Water of Leith WebMap - Map Styles v4
+   Water of Leith WebMap - Map Styles 
    ============================================================ */
 
 * {
@@ -26,7 +26,7 @@ body {
 }
 
 /* ============================================================
-   导航栏
+   Navigation bar
    ============================================================ */
 .map-nav {
     position: fixed;
@@ -80,7 +80,7 @@ body {
 }
 
 /* ============================================================
-   主容器
+   Main container
    ============================================================ */
 .map-container {
     position: fixed;
@@ -97,7 +97,7 @@ body {
 }
 
 /* ============================================================
-   侧边栏
+   Sidebar
    ============================================================ */
 .sidebar {
     width: var(--sidebar-width);
@@ -171,7 +171,7 @@ body {
 }
 
 /* ============================================================
-   图层控制
+   Layer control
    ============================================================ */
 .layer-hint {
     font-size: 0.75rem;
@@ -313,7 +313,7 @@ body {
 }
 
 /* ============================================================
-   图例
+   legend
    ============================================================ */
 .legend-section {
     margin-top: 20px;
@@ -377,7 +377,7 @@ body {
 }
 
 /* ============================================================
-   统计卡片
+   Statistical cards
    ============================================================ */
 .stats-card {
     background: var(--bg);
@@ -435,7 +435,7 @@ body {
 }
 
 /* ============================================================
-   要素信息
+   Element Information
    ============================================================ */
 #featureDetails {
     font-size: 0.9rem;
@@ -475,7 +475,7 @@ body {
 }
 
 /* ============================================================
-   弹窗样式
+   pop-up style
    ============================================================ */
 .leaflet-popup-content-wrapper {
     border-radius: 10px;
@@ -533,7 +533,7 @@ body {
 }
 
 /* ============================================================
-   3D模态框
+   3D modal frame
    ============================================================ */
 .modal-3d {
     display: none;
@@ -602,7 +602,7 @@ body {
 }
 
 /* ============================================================
-   导出弹窗
+   Export pop-up window
    ============================================================ */
 .modal-export,
 .modal-help {
@@ -703,7 +703,7 @@ body {
 }
 
 /* ============================================================
-   高亮效果
+   highlight
    ============================================================ */
 .highlighted-feature {
     animation: pulse 1s ease-in-out 3;
@@ -715,7 +715,7 @@ body {
 }
 
 /* ============================================================
-   响应式
+   responsive
    ============================================================ */
 @media (max-width: 768px) {
     :root {
@@ -727,5 +727,167 @@ body {
     }
 }
 /* ============================================================
-   指北针
+   compass
    ============================================================ */
+
+
+/* ============================================================
+   Postcode Search style
+   ============================================================ */
+.postcode-search {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+    margin: -15px -15px 15px -15px;
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+}
+
+.postcode-search h4 {
+    color: white;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.search-box {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    height: 38px;
+    box-sizing: border-box;
+}
+
+.search-box input::placeholder {
+    text-transform: none;
+}
+
+.search-box button {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    padding: 0;
+    background: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-box button:hover {
+    background: #f0f0f0;
+    transform: scale(1.05);
+}
+
+.search-result {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 6px;
+    color: white;
+    font-size: 0.85rem;
+    display: none;
+}
+
+.search-result.show {
+    display: block;
+}
+
+.search-result.success {
+    background: rgba(39, 174, 96, 0.3);
+}
+
+.search-result.warning {
+    background: rgba(241, 196, 15, 0.3);
+}
+
+.search-result.error {
+    background: rgba(231, 76, 60, 0.3);
+}
+
+.search-result .result-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+}
+
+.search-result .result-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.search-result .jump-link {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 5px 10px;
+    background: white;
+    color: #1e3a5f;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.search-result .jump-link:hover {
+    background: #f0f0f0;
+}
+
+/* Postcode Stats Card */
+#postcodeStats {
+    border-left: 4px solid #1e3a5f;
+}
+
+#postcodeStatsContent .stat-row {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--bg-alt);
+}
+
+#postcodeStatsContent .stat-row:last-child {
+    border-bottom: none;
+}
+
+#postcodeStatsContent .building-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+#postcodeStatsContent .building-item {
+    padding: 8px;
+    margin: 5px 0;
+    background: var(--bg-alt);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+#postcodeStatsContent .building-item:hover {
+    background: var(--primary);
+    color: white;
+}
+
+#postcodeStatsContent .building-item .building-type {
+    font-weight: 600;
+}
+
+#postcodeStatsContent .building-item .building-value {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+#postcodeStatsContent .building-item:hover .building-value {
+    color: #2ecc71;
+}

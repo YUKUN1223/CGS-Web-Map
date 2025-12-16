@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV /home/s2814398/Desktop/webmap_v4/backend/venv
+set -gx VIRTUAL_ENV /home/s2814398/Desktop/CGS-Web-Map-main/backend/venv
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

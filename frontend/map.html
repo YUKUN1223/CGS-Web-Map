@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/map.css">
 </head>
 <body>
-    <!-- 顶部导航 -->
+    <!-- Top Navigation -->
     <nav class="map-nav">
         <a href="index.html" class="nav-back">← Back to Home</a>
         <span class="nav-title">💧 Water of Leith Interactive Map</span>
@@ -23,13 +23,24 @@
         </div>
     </nav>
 
-    <!-- 主容器 -->
+    <!-- Main container -->
     <div class="map-container">
-        <!-- 左侧边栏 - 图层控制 -->
+        <!-- Left sidebar - Layer control -->
         <aside class="sidebar sidebar-left" id="leftSidebar">
             <button class="sidebar-toggle" id="leftToggle">◀</button>
             <div class="sidebar-content">
                 <h3 class="sidebar-title">🗂️ Layers</h3>
+                
+                <!-- Postcode query box -->
+                <div class="postcode-search">
+                    <h4>📮 Postcode Search</h4>
+                    <div class="search-box">
+                        <input type="text" id="postcodeInput" placeholder="Enter postcode (e.g. EH14 1DJ)">
+                        <button id="postcodeSearchBtn">🔍</button>
+                    </div>
+                    <div id="postcodeResult" class="search-result"></div>
+                </div>
+                
                 <p class="layer-hint">↕ Drag to reorder layers</p>
                 
                 <div class="layer-list" id="layerList">
@@ -40,6 +51,24 @@
                             <label for="layerStudyArea">
                                 <span class="layer-icon">🗺️</span> Study Area
                             </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Postcode Areas -->
+                    <div class="layer-item" draggable="true" data-layer="postcode">
+                        <div class="layer-header">
+                            <input type="checkbox" id="layerPostcode">
+                            <label for="layerPostcode">
+                                <span class="layer-icon">📮</span> Postcode Areas
+                            </label>
+                            <button class="layer-expand">▼</button>
+                        </div>
+                        <div class="layer-options">
+                            <select id="postcodeFilter">
+                                <option value="">All Postcodes</option>
+                                <option value="affected">Affected Only</option>
+                                <option value="unaffected">Unaffected Only</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -147,12 +176,16 @@
                     </div>
                 </div>
                 
-                <!-- 图例 -->
+                <!-- legend -->
                 <div class="legend-section">
                     <h4>Legend</h4>
                     <div class="legend-item">
                         <span class="legend-color dashed"></span>
                         <span>Study Area</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #3498db; opacity: 0.4; border: 2px solid #3498db;"></span>
+                        <span>Postcode Areas</span>
                     </div>
                     <div class="legend-group">
                         <strong>SIMD Vulnerability:</strong>
@@ -183,15 +216,16 @@
             </div>
         </aside>
 
-        <!-- 地图 -->
+        <!-- map -->
         <div id="map"></div>
-        <!-- 右侧边栏 - 统计信息 -->
+        
+        <!-- Right sidebar - Statistics -->
         <aside class="sidebar sidebar-right" id="rightSidebar">
             <button class="sidebar-toggle" id="rightToggle">▶</button>
             <div class="sidebar-content">
                 <h3 class="sidebar-title">📈 Statistics</h3>
                 
-                <!-- 总览 -->
+                <!-- Overview -->
                 <div class="stats-card">
                     <h4>Overview</h4>
                     <div class="stat-row">
@@ -212,7 +246,13 @@
                     </div>
                 </div>
                 
-                <!-- 损失分类图表 -->
+                <!-- Postcode summary -->
+                <div class="stats-card" id="postcodeStats" style="display: none;">
+                    <h4>📮 Postcode Summary</h4>
+                    <div id="postcodeStatsContent"></div>
+                </div>
+                
+                <!-- Loss Classification Chart -->
                 <div class="stats-card">
                     <h4>Damage by Category</h4>
                     <p class="chart-hint">Click bars to filter map</p>
@@ -221,7 +261,7 @@
                     </div>
                 </div>
                 
-                <!-- 绿地排名 -->
+                <!-- Green space ranking -->
                 <div class="stats-card">
                     <h4>Final Selected Greenspaces</h4>
                     <p class="chart-hint">Click to locate on map</p>
@@ -230,7 +270,7 @@
                     </div>
                 </div>
                 
-                <!-- 选中要素信息 -->
+                <!-- Selected feature information -->
                 <div class="stats-card" id="featureInfo" style="display: none;">
                     <h4>🔍 Selected Feature</h4>
                     <div id="featureDetails"></div>
@@ -239,7 +279,7 @@
         </aside>
     </div>
 
-    <!-- 3D模型弹窗 -->
+    <!-- 3D model pop-up window -->
     <div class="modal-3d" id="modal3D">
         <div class="modal-3d-content">
             <div class="modal-3d-header">
@@ -252,7 +292,7 @@
         </div>
     </div>
 
-    <!-- 导出弹窗 -->
+    <!-- Export pop-up window -->
     <div class="modal-export" id="modalExport">
         <div class="modal-export-content">
             <div class="modal-export-header">
@@ -279,7 +319,7 @@
         </div>
     </div>
 
-    <!-- 帮助弹窗 -->
+    <!-- Help pop-up-->
     <div class="modal-help" id="modalHelp">
         <div class="modal-help-content">
             <div class="modal-help-header">
@@ -287,6 +327,13 @@
                 <button class="modal-close" id="closeHelp">×</button>
             </div>
             <div class="modal-help-body">
+                <h4>Postcode Search</h4>
+                <ul>
+                    <li><strong>Search:</strong> Enter your postcode to check if your area is affected</li>
+                    <li><strong>Results:</strong> Shows total damage in that postcode area</li>
+                    <li><strong>Click buildings:</strong> View individual building damage details</li>
+                </ul>
+                
                 <h4>Layer Controls</h4>
                 <ul>
                     <li><strong>Toggle layers:</strong> Use checkboxes to show/hide layers</li>
@@ -298,17 +345,6 @@
                 <ul>
                     <li><strong>Click features:</strong> View detailed information</li>
                     <li><strong>3D Models:</strong> Click "View 3D" button for key greenspaces</li>
-                </ul>
-                
-                <h4>Charts</h4>
-                <ul>
-                    <li><strong>Category chart:</strong> Click bars to filter buildings by type</li>
-                    <li><strong>Greenspace chart:</strong> Click bars to locate and highlight greenspace</li>
-                </ul>
-                
-                <h4>Data Export</h4>
-                <ul>
-                    <li>Click "Export" button to download data in CSV format</li>
                 </ul>
                 
                 <h4>SIMD Classification</h4>

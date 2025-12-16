@@ -1,6 +1,7 @@
 """
-作者: s2814398
-日期: 2025
+Water of Leith WebMap 
+author:Yukun Zhai s2814398
+2025
 """
 
 from flask import Flask, jsonify, request, Response
@@ -10,40 +11,35 @@ import json
 import csv
 import io
 import os
+import sqlite3
+import geopandas as gpd
 from flask import send_from_directory
 from werkzeug.exceptions import NotFound
+
+
+# Postcode data path
+POSTCODE_GPKG_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Postcode.gpkg')
 
 app = Flask(__name__)
 CORS(app)
 
-ORACLE_USER = os.environ.get("ORACLE_USER")
-ORACLE_PASSWORD = os.environ.get("ORACLE_PASSWORD")
-ORACLE_DSN = os.environ.get("ORACLE_DSN", "172.16.108.21:1842/GLRNLIVE_PRMY.is.ed.ac.uk")
-
-DDB_CONFIG = {
-  'user': os.environ.get("ORACLE_USER", "s2814398"),
-  'password': os.environ.get("ORACLE_PASSWORD", "20031223ZYk"),
-  'dsn': os.environ.get("ORACLE_DSN", "172.16.108.21:1842/GLRNLIVE_PRMY.is.ed.ac.uk")
+# database configuration 
+DB_CONFIG = {
+    "user": "s2814398",
+    "password": "20031223ZYk", 
+    "dsn": "172.16.108.21:1842/GLRNLIVE_PRMY.is.ed.ac.uk"
 }
-
 def get_db_connection():
+    cfg = DB_CONFIG 
     try:
-        user = os.environ.get("ORACLE_USER")
-        password = os.environ.get("ORACLE_PASSWORD")
-        dsn = os.environ.get("ORACLE_DSN") or "172.16.108.21:1842/GLRNLIVE_PRMY.is.ed.ac.uk"
-
-        if not user or not password:
-            raise RuntimeError("ORACLE_USER/ORACLE_PASSWORD env not set")
-
-        # 打印一下确认你现在到底用的哪个 DSN（会进 gunicorn-error.log）
-        print("DB CONNECT USING DSN =", dsn)
-
-        return cx_Oracle.connect(user=user, password=password, dsn=dsn)
+        return cx_Oracle.connect(
+            user=cfg["user"],
+            password=cfg["password"],
+            dsn=cfg["dsn"]
+        )
     except Exception as e:
-        print("数据库连接错误:", e)
         return None
-
-# 3D模型映射
+# 3D model mapping
 GREENSPACE_3D_MODELS = {
     'Baberton Golf Course': 'Baberton Golf Course',
     'Campbell Park': 'Campbell Park',
@@ -58,7 +54,6 @@ GREENSPACE_3D_MODELS = {
     'Saughton Park and Gardens': 'Saughton Park',
     'Spylaw Public Park': 'Spylaw Public Park',
 }
-
 def get_3d_model_path(greenspace_name):
     if not greenspace_name:
         return None
@@ -69,9 +64,8 @@ def get_3d_model_path(greenspace_name):
         if db_name.lower() in name_lower or name_lower in db_name.lower():
             return f"3d_models/{folder_name}/index.html"
     return None
-
 # ============================================================
-# API - 研究区域
+# API - study area
 # ============================================================
 @app.route('/api/study_area', methods=['GET'])
 def get_study_area():
@@ -97,40 +91,26 @@ def get_study_area():
         for (area_id, area_name, pva_ref, geom_json) in rows:
             if geom_json is None:
                 continue
-
-            # 1) 读出 geom_json
             geom_str = geom_json.read() if hasattr(geom_json, "read") else geom_json
-
-            # 2) 处理 bytes -> str
             if isinstance(geom_str, (bytes, bytearray)):
                 geom_str = geom_str.decode("utf-8", errors="ignore")
-
-            # 3) 处理非 str 的情况
             if not isinstance(geom_str, str):
                 geom_str = str(geom_str)
 
             geom_str = geom_str.strip()
-
-            # 4) 解析 JSON
             try:
                 obj = json.loads(geom_str)
             except Exception as e:
                 fail += 1
-                if fail <= 5:  # 只打印前 5 个，避免刷屏
+                if fail <= 5: 
                     print("study_area json.loads failed:", e)
                     print("sample:", geom_str[:120])
                 continue
-
-            # 5) 兼容不同存储格式
-            # 情况A：直接是坐标数组 [[lng,lat],...]
             if isinstance(obj, list):
                 geometry = {"type": "Polygon", "coordinates": [obj]}
-
-            # 情况B：标准 geometry dict {"type": "...", "coordinates": ...}
             elif isinstance(obj, dict) and ("type" in obj and "coordinates" in obj):
                 geometry = obj
 
-            # 情况C：存的是 Feature / FeatureCollection
             elif isinstance(obj, dict) and obj.get("type") == "Feature":
                 geometry = obj.get("geometry")
             else:
@@ -157,7 +137,6 @@ def get_study_area():
         return jsonify({"type": "FeatureCollection", "features": features})
 
     except Exception as e:
-        # 这里不要只捕获 cx_Oracle.Error，因为 JSON/类型错误也会发生
         return jsonify({'error': str(e)}), 500
 
     finally:
@@ -170,9 +149,8 @@ def get_study_area():
             conn.close()
         except Exception:
             pass
-
 # ============================================================
-# API - SIMD分区（使用SIMD_DECILE字段！）
+# API - SIMD
 # ============================================================
 @app.route('/api/simd_zones', methods=['GET'])
 def get_simd_zones():
@@ -183,12 +161,10 @@ def get_simd_zones():
     try:
         cursor = conn.cursor()
         
-        # 获取筛选参数
         risk_level = request.args.get('risk_level', None)
         min_val = request.args.get('min', None, type=float)
         max_val = request.args.get('max', None, type=float)
         
-        # 使用 SIMD_DECILE 字段进行筛选（不是RISK_INDEX！）
         sql = """
             SELECT simd_zone_id, datazone_code, datazone_name, 
                    simd_decile, risk_index, simd_rank, geom_json
@@ -196,8 +172,6 @@ def get_simd_zones():
             WHERE geom_json IS NOT NULL
         """
         
-        # 按风险等级筛选（基于SIMD_DECILE）
-        # SIMD_DECILE: 1=最贫困(高风险), 10=最富裕(低风险)
         if risk_level:
             if risk_level == 'high':
                 sql += " AND simd_decile BETWEEN 1 AND 3"
@@ -206,7 +180,6 @@ def get_simd_zones():
             elif risk_level == 'low':
                 sql += " AND simd_decile BETWEEN 8 AND 10"
         
-        # 自定义区间筛选
         if min_val is not None:
             sql += f" AND simd_decile >= {min_val}"
         if max_val is not None:
@@ -251,7 +224,7 @@ def get_simd_zones():
         return jsonify({'error': str(e)}), 500
 
 # ============================================================
-# API - 绿地
+# API - Green space
 # ============================================================
 @app.route('/api/greenspaces', methods=['GET'])
 def get_greenspaces():
@@ -313,7 +286,7 @@ def get_greenspaces():
         return jsonify({'error': str(e)}), 500
 
 # ============================================================
-# API - 洪水区域
+# API - flood area
 # ============================================================
 @app.route('/api/flood_zones', methods=['GET'])
 def get_flood_zones():
@@ -365,7 +338,7 @@ def get_flood_zones():
         return jsonify({'error': str(e)}), 500
 
 # ============================================================
-# API - 建筑物损失
+# API - building damage
 # ============================================================
 @app.route('/api/flood_damage', methods=['GET'])
 def get_flood_damage():
@@ -441,7 +414,7 @@ def get_flood_damage():
         return jsonify({'error': str(e)}), 500
 
 # ============================================================
-# API - 汇总统计
+# API - summary
 # ============================================================
 @app.route('/api/summary', methods=['GET'])
 def get_summary():
@@ -465,7 +438,6 @@ def get_summary():
             summary['total_damage_protected'] = float(row[2]) if row[2] else 0
             summary['total_protection_value'] = float(row[3]) if row[3] else 0
         
-                # 选定绿地的存储量
             cursor.execute("""
                  SELECT SUM(storage_volume_m3), COUNT(*) 
                 FROM GREENSPACE 
@@ -502,7 +474,7 @@ def get_summary():
         return jsonify({'error': str(e)}), 500
 
 # ============================================================
-# API - 按类型统计
+# API - Statistics by type
 # ============================================================
 @app.route('/api/damage_by_category', methods=['GET'])
 def get_damage_by_category():
@@ -536,7 +508,7 @@ def get_damage_by_category():
         return jsonify({'error': str(e)}), 500
 
 # ============================================================
-# API - 绿地排名
+# API - Green space ranking
 # ============================================================
 @app.route('/api/greenspace_ranking', methods=['GET'])
 def get_greenspace_ranking():
@@ -576,7 +548,7 @@ def get_greenspace_ranking():
         return jsonify({'error': str(e)}), 500
 
 # ============================================================
-# API - 数据导出
+# API - data export
 # ============================================================
 @app.route('/api/export/<data_type>', methods=['GET'])
 def export_data(data_type):
@@ -615,7 +587,6 @@ def export_data(data_type):
             filename = 'simd_zone_data'
             
         elif data_type == 'summary':
-            # 返回汇总统计
             cursor.execute("""
                 SELECT 'Total Buildings' as metric, COUNT(*) as value FROM FLOOD_DAMAGE
                 UNION ALL
@@ -654,7 +625,121 @@ def export_data(data_type):
         return jsonify({'error': str(e)}), 500
 
 # ============================================================
-# 健康检查
+# API - Postcode
+# ============================================================
+POSTCODE_GPKG_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Postcode.gpkg')
+POSTCODE_LAYER = "postcode"
+
+_POSTCODE_CACHE = None  #
+
+def _ensure_postcode_cache():
+    global _POSTCODE_CACHE
+
+    if _POSTCODE_CACHE is not None:
+        return
+
+    if not os.path.exists(POSTCODE_GPKG_PATH):
+        raise FileNotFoundError(f'Postcode file not found: {POSTCODE_GPKG_PATH}')
+
+    gdf = gpd.read_file(POSTCODE_GPKG_PATH, layer=POSTCODE_LAYER)
+
+    if gdf.crs is None:
+        gdf = gdf.set_crs(epsg=27700)
+    gdf = gdf.to_crs(epsg=4326)
+
+    want_cols = [
+        'Postcode', 'District', 'Sector', 'Council', 'OA22',
+        'affected_count', 'total_damage', 'protection_value'
+    ]
+    keep_cols = [c for c in want_cols if c in gdf.columns]
+    gdf = gdf[keep_cols + ['geometry']]
+
+    _POSTCODE_CACHE = json.loads(gdf.to_json())
+
+
+@app.route('/api/postcodes', methods=['GET'])
+def get_postcodes():
+    try:
+        _ensure_postcode_cache()
+
+        filter_val = (request.args.get('filter') or '').strip().lower()
+        if not filter_val:
+            return jsonify(_POSTCODE_CACHE)
+
+        # 过滤（基于 properties.affected_count）
+        features = _POSTCODE_CACHE.get('features', [])
+
+        def get_acount(f):
+            p = (f.get('properties') or {})
+            v = p.get('affected_count', 0)
+            try:
+                return float(v)
+            except Exception:
+                return 0.0
+
+        if filter_val == 'affected':
+            filtered = [f for f in features if get_acount(f) > 0]
+        elif filter_val == 'unaffected':
+            filtered = [f for f in features if get_acount(f) == 0]
+        else:
+            filtered = features
+
+        return jsonify({
+            'type': 'FeatureCollection',
+            'features': filtered
+        })
+
+    except Exception as e:
+        return jsonify({'type': 'FeatureCollection', 'features': [], 'error': str(e)}), 500
+
+
+@app.route('/api/postcode/search', methods=['GET'])
+def search_postcode():
+    postcode = request.args.get('postcode', '').strip().upper()
+    if not postcode:
+        return jsonify({'error': 'Please provide a postcode', 'found': False}), 400
+
+    try:
+        _ensure_postcode_cache()
+
+        features = _POSTCODE_CACHE.get('features', [])
+        key1 = postcode
+        key2 = postcode.replace(' ', '')
+
+        hit = None
+        for f in features:
+            props = (f.get('properties') or {})
+            pc = (props.get('Postcode') or props.get('postcode') or '')
+            pc_u = str(pc).upper()
+            if pc_u == key1 or pc_u.replace(' ', '') == key2 or pc_u.startswith(key2):
+                hit = f
+                break
+
+        if not hit:
+            return jsonify({
+                'found': False,
+                'postcode': postcode,
+                'message': 'Postcode not found in study area'
+            })
+
+        props = hit.get('properties') or {}
+        return jsonify({
+            'found': True,
+            'postcode': props.get('Postcode') or props.get('postcode') or postcode,
+            'district': props.get('District'),
+            'sector': props.get('Sector'),
+            'geometry': hit.get('geometry'),
+            'affected_buildings': props.get('affected_count', 0),
+            'total_damage': props.get('total_damage', 0),
+            'protection_value': props.get('protection_value', 0),
+            'buildings': []
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e), 'found': False}), 500
+
+# ============================================================
+# health check
 # ============================================================
 @app.route('/api/health', methods=['GET'])
 def health_check():
@@ -668,37 +753,55 @@ def health_check():
 def index():
     return jsonify({
         'name': 'Water of Leith WebMap API',
-        'version': '4.0',
-        'features': ['SIMD_DECILE筛选', '区间筛选', '数据导出', '图表联动'],
+        'version': '4.1',
+        'features': ['SIMD_DECL filter',
+            'Zoning (area) filter',
+            'Data export',
+            'Chart interaction',
+            'Postcode search'],
         'endpoints': [
             '/api/study_area', '/api/simd_zones', '/api/greenspaces',
             '/api/flood_zones', '/api/flood_damage', '/api/summary',
             '/api/damage_by_category', '/api/greenspace_ranking',
+            '/api/postcodes', '/api/postcode/search',
             '/api/export/<type>', '/api/health'
         ]
     })
     
 FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
 
-@app.route("/", defaults={"path": ""})
-@app.route("/<path:path>")
-def serve_frontend(path):
-    # 让 /api/* 继续走后端，不要被前端接管
-    if path == "api" or path.startswith("api/"):
-        raise NotFound()
+@app.route("/css/<path:filename>")
+def serve_css(filename):
+    return send_from_directory(os.path.join(FRONTEND_DIR, "css"), filename)
 
-    # 如果请求的是前端的真实文件（js/css/img等），就直接返回该文件
-    full_path = os.path.join(FRONTEND_DIR, path)
-    if path and os.path.isfile(full_path):
-        return send_from_directory(FRONTEND_DIR, path)
+@app.route("/js/<path:filename>")
+def serve_js(filename):
+    return send_from_directory(os.path.join(FRONTEND_DIR, "js"), filename)
 
-    # 其他任何路径都回到前端首页（适合单页应用/刷新不404）
+@app.route("/images/<path:filename>")
+def serve_images(filename):
+    return send_from_directory(os.path.join(FRONTEND_DIR, "images"), filename)
+
+@app.route("/3d_models/<path:filename>")
+def serve_3d_models(filename):
+    return send_from_directory(os.path.join(FRONTEND_DIR, "3d_models"), filename)
+
+@app.route("/")
+def serve_index():
     return send_from_directory(FRONTEND_DIR, "index.html")
+
+@app.route("/index.html")
+def serve_index_html():
+    return send_from_directory(FRONTEND_DIR, "index.html")
+
+@app.route("/map.html")
+def serve_map():
+    return send_from_directory(FRONTEND_DIR, "map.html")
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 55430))
     print(f"\n{'='*60}")
     print(f"  Water of Leith WebMap API ")
-    print(f"  地址: http://0.0.0.0:{port}")
+    print(f"   http://0.0.0.0:{port}")
     print(f"{'='*60}\n")
     app.run(host='0.0.0.0', port=port, debug=False)

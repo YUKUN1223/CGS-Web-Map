@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- 导航栏 -->
+    <!-- Navigation bar -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="nav-logo">
@@ -37,25 +37,48 @@
                 Evaluating the economic benefits of using urban greenspaces as natural flood reservoirs 
                 in the Water of Leith catchment, Edinburgh
             </p>
+            
+            <!-- Key statistics -->
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <span class="stat-number" data-target="71000000" data-prefix="£" data-suffix="">0</span>
-                    <span class="stat-desc">Protection Value</span>
+                    <span class="stat-number" data-target="71001757" data-prefix="£" data-format="full">0</span>
+                    <span class="stat-desc">Total Protection Value</span>
                 </div>
                 <div class="hero-stat">
                     <span class="stat-number" data-target="73" data-prefix="" data-suffix="%">0</span>
                     <span class="stat-desc">Damage Reduction</span>
                 </div>
                 <div class="hero-stat">
-                    <span class="stat-number" data-target="267321" data-format="full" data-prefix="" data-suffix=" m³">0</span>
+                    <span class="stat-number" data-target="267321" data-format="full" data-suffix=" m³">0</span>
                     <span class="stat-desc">Storage Capacity</span>
                 </div>
             </div>
+            
+            <!-- Detailed classification data -->
+            <div class="hero-details">
+                <div class="detail-item">
+                    <span class="detail-value" data-target="41844436" data-prefix="£" data-format="full">£0</span>
+                    <span class="detail-label">Residential Savings</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-value" data-target="27140314" data-prefix="£" data-format="full">£0</span>
+                    <span class="detail-label">Commercial Savings</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-value" data-target="2017007" data-prefix="£" data-format="full">£0</span>
+                    <span class="detail-label">Industrial Savings</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-value" data-target="1105" data-format="full">0</span>
+                    <span class="detail-label">Buildings Protected</span>
+                </div>
+            </div>
+            
             <a href="map.html" class="hero-cta">Explore Interactive Map →</a>
         </div>
     </header>
 
-    <!-- 项目概述 -->
+    <!-- Project Overview -->
     <section class="section" id="overview">
         <div class="section-container">
             <h2 class="section-title">
@@ -85,7 +108,39 @@
         </div>
     </section>
 
-    <!-- 方法论 -->
+    <!-- Images of the study area -->
+    <section class="section section-gallery" id="gallery">
+        <div class="section-container">
+            <h2 class="section-title">
+                <span class="title-icon">📸</span>
+                Study Area Gallery
+            </h2>
+            <p class="gallery-subtitle">Exploring the Water of Leith catchment and its greenspaces</p>
+            
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="images/photo1.jpg" alt="Water of Leith Study Area">
+                    <div class="gallery-overlay">
+                        <span>Water of Leith Catchment</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/photo2.jpg" alt="Greenspace Reservoir">
+                    <div class="gallery-overlay">
+                        <span>Natural Flood Reservoir</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="images/photo3.jpg" alt="Field Survey">
+                    <div class="gallery-overlay">
+                        <span>Field Survey Site</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methodology -->
     <section class="section section-alt" id="methodology">
         <div class="section-container">
             <h2 class="section-title">
@@ -142,71 +197,31 @@
                     <div class="step-number">05</div>
                     <div class="step-content">
                         <h3>Financial Damage Assessment</h3>
-                        <p>JRC Global Flood Depth-Damage Functions applied to calculate baseline damages. Values adjusted using CPI from 2010 to 2024 prices. Avoided damage calculated using flood volume reduction coefficient.</p>
+                        <p>JRC Global Flood Depth-Damage Functions applied to calculate baseline damages. Values adjusted using Cost Price Index from 2010 to 2024 prices. Avoided damage calculated using flood volume reduction coefficient. Residual Damage calculated as the damage caused by the remaining flood volume, after applying the flood volume reduction coefficient.</p>
                         <div class="formula-box">
+                            <div class="formula-row">
+                                <span class="formula-label">Max Damage per Building:</span>
+                                <span class="formula-eq">Max Damage (€) = (Max Damage Structure (€/m², 2010) + Max Damage Content (€/m², 2010)) × Building Area (m²)</span>
+                            </div>
+                            <div class="formula-row">
+                                <span class="formula-label">Baseline Damage:</span>
+                                <span class="formula-eq">Baseline Damage (€) = Max Damage (€) × Damage Function (%)</span>
+                            </div>
                             <div class="formula-row">
                                 <span class="formula-label">CPI Adjustment:</span>
                                 <span class="formula-eq">Damage<sub>2024</sub> = Damage<sub>2010</sub> × 1.474</span>
                             </div>
                             <div class="formula-row">
-                                <span class="formula-label">Protected Damage:</span>
-                                <span class="formula-eq">Damage<sub>protected</sub> = Damage<sub>2024</sub> × 0.27</span>
+                                <span class="formula-label">Avoid Damage:</span>
+                                <span class="formula-eq">Damage<sub>Protected</sub> = Damage<sub>2024</sub> × 0.73</span>
                             </div>
                             <div class="formula-row">
-                                <span class="formula-label">Protection Value:</span>
-                                <span class="formula-eq">Value = Damage<sub>2024</sub> × 0.73</span>
+                                <span class="formula-label">Residual Damage:</span>
+                                <span class="formula-eq">Damage<sub>Remaining</sub> = Damage<sub>2024</sub> × 0.27</span>
                             </div>
                         </div>
                         <div class="formula-source">Source: JRC Technical Report (Huizinga et al., 2017)</div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 关键发现 -->
-    <section class="section" id="findings">
-        <div class="section-container">
-            <h2 class="section-title">
-                <span class="title-icon">📊</span>
-                Key Findings
-            </h2>
-            
-            <div class="findings-grid">
-                <div class="finding-card primary">
-                    <div class="finding-value" data-target="71001757" data-prefix="£">£0</div>
-                    <div class="finding-label">Total Protection Value</div>
-                    <div class="finding-detail">Economic benefit from greenspace flood mitigation</div>
-                </div>
-                
-                <div class="finding-card">
-                    <div class="finding-value" data-target="41800000" data-prefix="£">£0</div>
-                    <div class="finding-label">Residential Savings</div>
-                    <div class="finding-detail">Avoided damage to residential properties</div>
-                </div>
-                
-                <div class="finding-card">
-                    <div class="finding-value" data-target="27100000" data-prefix="£">£0</div>
-                    <div class="finding-label">Commercial Savings</div>
-                    <div class="finding-detail">Avoided damage to commercial properties</div>
-                </div>
-                
-                <div class="finding-card">
-                    <div class="finding-value" data-target="2100000" data-prefix="£">£0</div>
-                    <div class="finding-label">Industrial Savings</div>
-                    <div class="finding-detail">Avoided damage to industrial properties</div>
-                </div>
-                
-                <div class="finding-card">
-                    <div class="finding-value" data-target="267321" data-suffix=" m³">0</div>
-                    <div class="finding-label">Key Greenspace Storage</div>
-                    <div class="finding-detail">Selected reservoirs capacity</div>
-                </div>
-                
-                <div class="finding-card">
-                    <div class="finding-value" data-target="1105" data-prefix="">0</div>
-                    <div class="finding-label">Buildings Protected</div>
-                    <div class="finding-detail">Properties within flood zone</div>
                 </div>
             </div>
         </div>
@@ -221,7 +236,7 @@
         </div>
     </section>
 
-    <!-- 页脚 -->
+    <!-- footer -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-info">

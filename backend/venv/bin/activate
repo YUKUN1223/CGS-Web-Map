@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV=/home/s2814398/Desktop/webmap_v4/backend/venv
+VIRTUAL_ENV=/home/s2814398/Desktop/CGS-Web-Map-main/backend/venv
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

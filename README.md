@@ -1,122 +1,77 @@
-# Water of Leith WebMap v4
+# Water of Leith WebMap
 
-## 🔧 重大修复
+**Interactive map for assessing the flood protection value of green spaces**
 
-### SIMD筛选问题修复
-- **问题**: 之前使用`RISK_INDEX`字段，但该字段538条记录为0，只有59条有值
-- **解决**: 改用`SIMD_DECILE`字段（1-10的整数值）进行分类筛选
-- **分类规则**:
-  - High Vulnerability (高脆弱性): Decile 1-3 → 红色
-  - Medium Vulnerability (中等): Decile 4-7 → 橙色  
-  - Low Vulnerability (低脆弱性): Decile 8-10 → 绿色
+---
 
-## ✨ 新增功能
+## Features
 
-### 1. 数据导出功能
-- 点击导航栏"Export"按钮
-- 支持导出: 洪水损失、绿地、SIMD区域、汇总统计
-- 格式: CSV
+- **Interactive Map** - Multi-layer map based on Leaflet
 
-### 2. 区间筛选功能
-- SIMD: 支持Decile范围筛选(1-10)
-- 绿地: 支持蓄水容量范围筛选
-- 建筑损失: 支持保护价值范围筛选
+- **Building Loss Visualization** - Gradient colors display conservation value
 
-### 3. 图表与地图联动
-- **损失分类图表**: 点击柱状图自动筛选该类型建筑
-- **绿地排名图表**: 点击柱状图自动定位并高亮该绿地
+- **Green Space Analysis** - Storage capacity display for 7 key green spaces
 
-### 4. 首页数字滚动动画
-- 保留原版动画效果
-- 修复页面自动滚到底部的bug
+- **Postcode Lookup** - Enter postcode to view area information
 
-## 📁 项目结构
+- **Real-time Statistics** - Charts displaying loss categories and green space rankings
 
-```
-webmap_v4/
-├── backend/
-│   ├── app.py              # Flask API (关键修复在此)
-│   └── requirements.txt
-├── frontend/
-│   ├── index.html          # 首页
-│   ├── map.html            # 地图页
-│   ├── css/
-│   │   ├── style.css       # 首页样式
-│   │   └── map.css         # 地图样式
-│   ├── js/
-│   │   ├── main.js         # 首页脚本(数字动画)
-│   │   └── map.js          # 地图脚本
-│   └── 3d_models/          # 3D模型文件夹
-└── README.md
-```
+---
 
-## 🚀 部署步骤
+## Core Data
 
-### 1. 上传到服务器
+| Indicators | Values ​​|
+
+|------|------|
+
+| Total Conservation Value | £71,001,757 |
+
+| Damage Reduction Rate | 73% |
+
+| Green Space Storage Capacity | 267,321 m³ |
+
+| Affected Buildings | 1,105
+
+---
+
+## Quick Deployment
+
+### 1. Connect to devapps
+
 ```bash
-scp WaterOfLeith_WebMap_v4.zip s2814398@scotia:~/
-ssh s2814398@scotia
-unzip WaterOfLeith_WebMap_v4.zip
-cd webmap_v4
+ssh devapps
+
 ```
 
-### 2. 修改数据库密码
-编辑 `backend/app.py` 第24行:
-```python
-'password': '你的实际密码',
-```
+### 2. Create a screen session
 
-### 3. 安装依赖并启动后端
 ```bash
-cd backend
-pip install -r requirements.txt --user
-python app.py
-```
-后端将在 http://localhost:5000 运行
+screen -S webmap
 
-### 4. 修改前端API地址
-编辑 `frontend/js/map.js` 第8行:
-```javascript
-const API_BASE_URL = 'http://你的服务器地址:5000/api';
 ```
 
-### 5. 启动前端
+### 3. Start the application
+
 ```bash
-cd ../frontend
-python -m http.server 8080
+cd ~/CGS-Web-Map-main/backend
+source venv/bin/activate
+export ORACLE_USER=s2814398
+export ORACLE_PASSWORD=20031223ZYk
+export ORACLE_DSN=172.16.108.21:1842/GLRNLIVE_PRMY.is.ed.ac.uk
+SCRIPT_NAME=/dev/tigisgroup3 ./venv/bin/gunicorn --bind 0.0.0.0:55430 app:app
+
 ```
-访问 http://服务器地址:8080
 
-## 📊 API端点
+### 4. Detach screen
 
-| 端点 | 参数 | 说明 |
-|------|------|------|
-| `/api/simd_zones` | `risk_level`, `min`, `max` | SIMD区域(使用SIMD_DECILE) |
-| `/api/greenspaces` | `type`, `min_storage`, `max_storage` | 绿地数据 |
-| `/api/flood_damage` | `type`, `min_value`, `max_value` | 建筑损失 |
-| `/api/flood_zones` | `depth` | 洪水区域 |
-| `/api/export/<type>` | `format` | 数据导出 |
-| `/api/summary` | - | 汇总统计 |
-| `/api/damage_by_category` | - | 按类型统计 |
-| `/api/greenspace_ranking` | `limit` | 绿地排名 |
+Press `Ctrl+A` then press `D`
 
-## ⚠️ 注意事项
+### 5. Access
 
-1. **SIMD分类说明**:
-   - SIMD Decile 1 = 最贫困区域 (高脆弱性)
-   - SIMD Decile 10 = 最富裕区域 (低脆弱性)
+```
+https://www.geos.ed.ac.uk/dev/tigisgroup3/index.html
 
-2. **3D模型**: 确保3d_models文件夹包含所有10个关键绿地的模型
+```
+## license
 
-3. **数据库连接**: 确保Oracle客户端已正确配置
-
-## 🐛 已修复问题
-
-- [x] SIMD筛选不工作 (改用SIMD_DECILE字段)
-- [x] 首页数字没有滚动动画
-- [x] 首页自动滚到底部
-- [x] 侧边栏收起后无法展开
-
-## 📞 技术支持
-
-如有问题，请联系 s2814398@ed.ac.uk
+This project is for academic purposes only | Edinburgh University 2025
