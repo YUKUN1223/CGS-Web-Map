@@ -352,8 +352,8 @@ h1, h2, h3, h4 {
 }
 
 .formula-box {
-    background: white;
-    border: 1px solid var(--accent);
+    background: var(--bg-alt);
+    border: none;
     border-radius: 8px;
     padding: 15px 20px;
     margin: 15px 0;
