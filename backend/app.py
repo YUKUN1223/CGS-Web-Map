@@ -23,22 +23,68 @@ POSTCODE_GPKG_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'Post
 app = Flask(__name__)
 CORS(app)
 
-# database configuration 
 DB_CONFIG = {
-    "user": "s2814398",
-    "password": "20031223ZYk", 
-    "dsn": "172.16.108.21:1842/GLRNLIVE_PRMY.is.ed.ac.uk"
+    "user": os.environ.get("ORACLE_USER", "s2814398"),
+    "dsn": os.environ.get("ORACLE_DSN", "172.16.108.21:1842/GLRNLIVE_PRMY.is.ed.ac.uk"),
 }
-def get_db_connection():
-    cfg = DB_CONFIG 
+
+def _read_oracle_password():
+    """Read Oracle password from env ORACLE_PASSWORD or a restricted file (ORACLE_PASSWORD_FILE).
+    Fallback to teaching-lab default path: ~/.ora_student_home/chir
+    """
+    pw = os.environ.get("ORACLE_PASSWORD")
+    if pw:
+        return pw.strip()
+
+    pw_file = os.environ.get("ORACLE_PASSWORD_FILE")
+    if not pw_file:
+        pw_file = os.path.expanduser("~/.ora_student_home/chir")
+        if not os.path.exists(pw_file):
+            alt = "/home/chill2/.ora_student_home/chir"
+            if os.path.exists(alt):
+                pw_file = alt
+
     try:
-        return cx_Oracle.connect(
-            user=cfg["user"],
-            password=cfg["password"],
-            dsn=cfg["dsn"]
-        )
-    except Exception as e:
+        with open(pw_file, "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except Exception:
         return None
+
+
+_ORACLE_POOL = None
+
+def _get_pool():
+    global _ORACLE_POOL
+    if _ORACLE_POOL is not None:
+        return _ORACLE_POOL
+
+    password = _read_oracle_password()
+    if not password:
+        return None
+
+    try:
+        _ORACLE_POOL = cx_Oracle.create_pool(
+            user=DB_CONFIG["user"],
+            password=password,
+            dsn=DB_CONFIG["dsn"],
+            min=int(os.environ.get("ORACLE_POOL_MIN", "1")),
+            max=int(os.environ.get("ORACLE_POOL_MAX", "4")),
+            increment=int(os.environ.get("ORACLE_POOL_INC", "1")),
+        )
+        return _ORACLE_POOL
+    except Exception:
+        _ORACLE_POOL = None
+        return None
+
+def get_db_connection():
+    pool = _get_pool()
+    if not pool:
+        return None
+    try:
+        return pool.acquire()
+    except Exception:
+        return None
+
 # 3D model mapping
 GREENSPACE_3D_MODELS = {
     'Baberton Golf Course': 'Baberton Golf Course',
