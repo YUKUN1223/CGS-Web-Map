@@ -389,7 +389,46 @@ h1, h2, h3, h4 {
     font-style: italic;
     margin-top: 10px;
 }
+.result-figures{
+  display: grid;
+  grid-template-columns: 2fr 1fr; 
+  gap: 14px;
+  margin: 14px 0 10px;
+  align-items: start;
+}
+.figure.v-center{
+  align-self: center;
+}
+.figure{
+  margin: 0;
+  padding: 12px;
+  background: var(--bg-alt);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
 
+.figure img{
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+.figure figcaption{
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+.figure figcaption{
+  text-align: center;
+}
+@media (max-width: 900px){
+  .result-figures{
+    grid-template-columns: 1fr;
+  }
+}
 /* ============================================================
    Findings
    ============================================================ */
