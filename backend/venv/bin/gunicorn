@@ -1,4 +1,4 @@
-#!/home/s2814398/Desktop/webmap_v4/backend/venv/bin/python
+#!/home/s2814398/Desktop/CGS-Web-Map/backend/venv/bin/python3
 import sys
 from gunicorn.app.wsgiapp import run
 if __name__ == '__main__':

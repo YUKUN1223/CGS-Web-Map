@@ -712,7 +712,7 @@ def get_postcodes():
         if not filter_val:
             return jsonify(_POSTCODE_CACHE)
 
-        # 过滤（基于 properties.affected_count）
+        # filter
         features = _POSTCODE_CACHE.get('features', [])
 
         def get_acount(f):
